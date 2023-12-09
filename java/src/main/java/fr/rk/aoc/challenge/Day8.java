@@ -1,7 +1,5 @@
 package fr.rk.aoc.challenge;
 
-import java.math.BigInteger;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,25 +7,22 @@ import java.util.Map;
 
 public final class Day8 {
 
-    public static BigInteger getNbStepToReachAllZ(List<String> input) {
+    public static long getNbStepToReachAllZ(List<String> input) {
         String instruction = input.get(0);
         Map<String, Node> nodes = new HashMap<>();
         for(int i=2; i<input.size(); i++) {
             Node node = new Node(input.get(i));
             nodes.put(node.value, node);
         }
-        long nbStep = 0L;
-        Map<Node, Long> aNodes = new HashMap<>();
+        List<Long> nbStepsForEachNode = new ArrayList<>();
         nodes.forEach( (k, v) -> {
             if(k.endsWith("A")) {
-                aNodes.put(v, getNbStepToReachOneZ(instruction, v, nodes));
+                nbStepsForEachNode.add(getNbStepToReachOneZ(instruction, v, nodes));
             }
         });
-        // Il faut calculer le PPCM des 6 steps
-        // A coder plus tard, calcul via un site ==> 13663968099527
-        BigInteger res = BigInteger.ONE;
-        for(Map.Entry<Node, Long> entry : aNodes.entrySet()) {
-            res = res.multiply(new BigInteger(String.valueOf(entry.getValue())));
+        long res = ppcm(nbStepsForEachNode.get(0), nbStepsForEachNode.get(1));
+        for(int i=2; i<nbStepsForEachNode.size(); i++) {
+            res = ppcm(res, nbStepsForEachNode.get(i));
         }
         return res;
     }
@@ -109,6 +104,19 @@ public final class Day8 {
             this.leftNode = nodeDestinations[0].trim();
             this.rightNode = nodeDestinations[1].trim();
         }
+    }
+
+
+    static long pgcd(long a, long b)
+    {
+        if (a == 0)
+            return b;
+        return pgcd(b % a, a);
+    }
+
+    static long ppcm(long a, long b)
+    {
+        return (a / pgcd(a, b)) * b;
     }
 
 
