@@ -1,7 +1,10 @@
 package fr.rk.aoc.challenge;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.*;
 
+@Slf4j
 public final class Day7 {
 
     public static long getHandsTotalScore(List<String> input, boolean withJoker) {
@@ -13,6 +16,7 @@ public final class Day7 {
         Collections.sort(hands);
         long score = 0L;
         for(int i=1; i<=hands.size(); i++) {
+            log.info("Hand {} : {} - {}", i, hands.get(i-1).cardsAsString, hands.get(i-1).handValue);
             score += i*hands.get(i-1).bid;
         }
         return score;
@@ -54,6 +58,8 @@ public final class Day7 {
         String cardsAsString;
         HandValue handValue;
 
+        boolean withJoker;
+
         Hand(String input, boolean withJoker) {
             String[] hand = input.split(" ");
             this.cardsAsString = hand[0];
@@ -93,34 +99,69 @@ public final class Day7 {
             int nb4 = 0;
             int nb3 = 0;
             int nb2 = 0;
-            for(Map.Entry<Integer, Integer> nbCard : cardNb.entrySet()) {
-                if (withJoker ? nbCard.getValue() + nbJ == 5 : nbCard.getValue() == 5) {
-                    nb5++;
+
+            if(withJoker) {
+                for(Map.Entry<Integer, Integer> nbCard : cardNb.entrySet()) {
+                    if(nbCard.getKey() != 1) {
+                        if (nbCard.getValue() == 5) {
+                            nb5++;
+                        }
+                        if (nbCard.getValue() == 4) {
+                            nb4++;
+                        }
+                        if (nbCard.getValue() == 3) {
+                            nb3++;
+                        }
+                        if (nbCard.getValue() == 2) {
+                            nb2++;
+                        }
+                    }
                 }
-                if (withJoker ? nbCard.getValue() + nbJ == 4 : nbCard.getValue() == 4) {
-                    nb4++;
+                if(nb5 == 1 || (nb4 == 1 && nbJ == 1) || (nb3 == 1 && nbJ == 2) || (nb2 == 1 && nbJ == 3) || nbJ == 4 || nbJ ==5) {
+                    this.handValue = HandValue.FIVE_OF_A_KIND;
+                } else if(nb4 == 1 || (nb3 == 1 && nbJ == 1) || (nb2 == 1 && nbJ == 2) || nbJ == 3) {
+                    this.handValue = HandValue.FOUR_OF_A_KIND;
+                } else if((nb3 == 1 && nb2 == 1) || (nb2 == 2 && nbJ == 1)) {
+                    this.handValue = HandValue.FULL_HOUSE;
+                } else if(nb3 == 1 || nbJ == 2 || (nb2 == 1 && nbJ == 1)) {
+                    this.handValue = HandValue.THREE_OF_A_KIND;
+                } else if(nb2 == 2) {
+                    this.handValue = HandValue.TWO_PAIR;
+                } else if(nb2 == 1 || nbJ == 1) {
+                    this.handValue = HandValue.PAIR;
+                } else {
+                    this.handValue = HandValue.HIGH_CARD;
                 }
-                if (withJoker ? nbCard.getValue() + nbJ == 3 : nbCard.getValue() == 3) {
-                    nb3++;
-                }
-                if (withJoker ? nbCard.getValue() + nbJ == 2 : nbCard.getValue() == 2) {
-                    nb2++;
-                }
-            }
-            if(nb5 >= 1) {
-                this.handValue = HandValue.FIVE_OF_A_KIND;
-            } else if(nb4 >= 1) {
-                this.handValue = HandValue.FOUR_OF_A_KIND;
-            } else if(nb3 >= 1 && nb2 >= 1) {
-                this.handValue = HandValue.FULL_HOUSE;
-            } else if(nb3 >= 1) {
-                this.handValue = HandValue.THREE_OF_A_KIND;
-            } else if(nb2 >= 2) {
-                this.handValue = HandValue.TWO_PAIR;
-            } else if(nb2 == 1) {
-                this.handValue = HandValue.PAIR;
             } else {
-                this.handValue = HandValue.HIGH_CARD;
+                for(Map.Entry<Integer, Integer> nbCard : cardNb.entrySet()) {
+                    if (nbCard.getValue() == 5) {
+                        nb5++;
+                    }
+                    if (nbCard.getValue() == 4) {
+                        nb4++;
+                    }
+                    if (nbCard.getValue() == 3) {
+                        nb3++;
+                    }
+                    if (nbCard.getValue() == 2) {
+                        nb2++;
+                    }
+                }
+                if(nb5 == 1) {
+                    this.handValue = HandValue.FIVE_OF_A_KIND;
+                } else if(nb4 == 1) {
+                    this.handValue = HandValue.FOUR_OF_A_KIND;
+                } else if(nb3 == 1 && nb2 == 1) {
+                    this.handValue = HandValue.FULL_HOUSE;
+                } else if(nb3 == 1) {
+                    this.handValue = HandValue.THREE_OF_A_KIND;
+                } else if(nb2 == 2) {
+                    this.handValue = HandValue.TWO_PAIR;
+                } else if(nb2 == 1) {
+                    this.handValue = HandValue.PAIR;
+                } else {
+                    this.handValue = HandValue.HIGH_CARD;
+                }
             }
         }
     }
