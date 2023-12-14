@@ -25,14 +25,6 @@ public class Day14Test {
             "#OO..#...."
     ));
 
-    ArrayList<String> inputTest2 = new ArrayList<>(Arrays.asList(
-            "O.##0#....",
-            "O.OO#O...#",
-            "O.#O0##...",
-            "O.OOO0...O",
-            "O.###0..O#"
-    ));
-
     @Test
     public void testSumOfWeight() {
         MatcherAssert.assertThat("Sum is 136", Day14.getSumOfWeight(inputTest, false, -1), Matchers.equalTo(136L));
