@@ -29,21 +29,8 @@ public final class Day16 {
 
     public static long getNbTileEnergized(List<String> input, int xStart, int yStart, Direction direction) {
         Grid g = new Grid(input, xStart, yStart, direction);
-        long nbMaxCycle = 10L;
-        long curCyle = 0L;
-        long lastNbEnergize = g.getNbEnergized();
         while(g.beams.size() > 0) {
             g.runGridOnce();
-            long curNbEnergize = g.getNbEnergized();
-            if(curNbEnergize == lastNbEnergize) {
-                curCyle++;
-            } else {
-                curCyle = 0;
-            }
-            lastNbEnergize = curNbEnergize;
-            if(nbMaxCycle == curCyle) {
-                break;
-            }
         }
         return g.getNbEnergized();
     }
@@ -93,12 +80,14 @@ public final class Day16 {
         int y;
         boolean energized;
         char c;
+        Boolean hasDivide;
 
         Cell(int x, int y, char c) {
             this.x = x;
             this.y = y;
             this.c = c;
             this.energized = false;
+            this.hasDivide = Boolean.FALSE;
         }
 
         List<Beam> runBeam(Beam b) {
@@ -130,16 +119,22 @@ public final class Day16 {
                     break;
                 case '-':
                     if(b.direction == Direction.UP || b.direction == Direction.DOWN) {
-                        newBeams.add(new Beam(b.curX, b.curY, Direction.LEFT));
-                        newBeams.add(new Beam(b.curX, b.curY, Direction.RIGHT));
+                        if (!hasDivide) {
+                            newBeams.add(new Beam(b.curX, b.curY, Direction.LEFT));
+                            newBeams.add(new Beam(b.curX, b.curY, Direction.RIGHT));
+                            hasDivide = Boolean.TRUE;
+                        }
                     } else {
                         newBeams.add(b);
                     }
                     break;
                 case '|':
                     if(b.direction == Direction.LEFT || b.direction == Direction.RIGHT) {
-                        newBeams.add(new Beam(b.curX, b.curY, Direction.UP));
-                        newBeams.add(new Beam(b.curX, b.curY, Direction.DOWN));
+                        if (!hasDivide) {
+                            newBeams.add(new Beam(b.curX, b.curY, Direction.UP));
+                            newBeams.add(new Beam(b.curX, b.curY, Direction.DOWN));
+                            hasDivide = Boolean.TRUE;
+                        }
                     } else {
                         newBeams.add(b);
                     }
@@ -154,10 +149,6 @@ public final class Day16 {
             }
             return newBeams;
         }
-    }
-
-    static class runBeamResult {
-        List<Beam> b;
     }
 
     static class Beam {

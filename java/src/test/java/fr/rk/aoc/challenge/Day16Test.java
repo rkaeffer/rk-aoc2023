@@ -32,7 +32,7 @@ public class Day16Test {
 
     @Test
     public void testNbMaxTileEnergized() {
-        MatcherAssert.assertThat("Nb max tile energized is 46", Day16.getMaxNbTileEnergized(inputTest), Matchers.equalTo(51L));
+        MatcherAssert.assertThat("Nb max tile energized is 51", Day16.getMaxNbTileEnergized(inputTest), Matchers.equalTo(51L));
     }
 
     @Test
